@@ -5,6 +5,12 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,6 +34,6 @@
     "react": "^18.3.1"
   },
   "dependencies": {
-    "@workos-inc/authkit-js": "^0.0.0"
+    "@workos-inc/authkit-js": "0.0.x"
   }
 }
