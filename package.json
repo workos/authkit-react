@@ -1,0 +1,33 @@
+{
+  "name": "@workos-inc/authkit-react",
+  "version": "0.0.0",
+  "description": "AuthKit React SDK",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/workos/authkit-react.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/workos/authkit-react/issues"
+  },
+  "homepage": "https://github.com/workos/authkit-react#readme",
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.1.2",
+    "typescript": "^5.5.3"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  },
+  "dependencies": {
+    "@workos-inc/authkit-js": "^0.0.0"
+  }
+}
