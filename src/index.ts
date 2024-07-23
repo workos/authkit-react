@@ -1,2 +1,2 @@
 export { useAuth } from './hook';
-export { WorkOSProvider } from './provider';
+export { AuthKitProvider } from './provider';

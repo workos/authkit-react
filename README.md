@@ -17,9 +17,9 @@ yarn add @workos-inc/authkit-react
 ```jsx
 function Root() {
   return (
-    <WorkOSProvider clientId="client_123456">
+    <AuthKitProvider clientId="client_123456">
       <App />
-    </WorkOSProvider>
+    </AuthKitProvider>
   );
 }
 

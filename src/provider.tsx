@@ -6,12 +6,12 @@ import { Context } from './context';
 import { Client, CreateClientOptions } from './types';
 import { initialState } from './state';
 
-interface WorkOSProviderProps extends CreateClientOptions {
+interface AuthKitProviderProps extends CreateClientOptions {
   clientId: string;
   children: React.ReactNode;
 }
 
-export function WorkOSProvider(props: WorkOSProviderProps) {
+export function AuthKitProvider(props: AuthKitProviderProps) {
   const { clientId, devMode, apiHostname, https, port, redirectUri, children, onRedirectCallback } = props;
   const [client, setClient] = React.useState<Client>(NOOP_CLIENT);
   const [state, setState] = React.useState(initialState);

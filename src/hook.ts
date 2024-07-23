@@ -5,7 +5,7 @@ export function useAuth() {
   const context = React.useContext(Context);
 
   if (!context) {
-    throw new Error("useAuth must be used within a WorkOSProvider");
+    throw new Error("useAuth must be used within an AuthKitProvider");
   }
 
   return context;
