@@ -14,7 +14,7 @@ yarn add @workos-inc/authkit-react
 
 ## Setup
 
-Add your site URL to the list of allowed origins in the WorkOS dashboard by
+Add your site's URL to the list of allowed origins in the WorkOS dashboard by
 clicking on the "Configure sessions" button of the "Authentication" page.
 
 ## Usage
