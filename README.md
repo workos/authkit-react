@@ -12,6 +12,11 @@ or
 yarn add @workos-inc/authkit-react
 ```
 
+## Setup
+
+Add your site URL to the list of allowed origins in the WorkOS dashboard by
+clicking on the "Configure sessions" button of the "Authentication" page.
+
 ## Usage
 
 ```jsx
@@ -19,7 +24,7 @@ import { useAuth, AuthKitProvider } from "@workos-inc/authkit-react";
 
 function Root() {
   return (
-    <AuthKitProvider clientId="client_123456">
+    <AuthKitProvider clientId="client_123456" apiHostname="auth.example.com">
       <App />
     </AuthKitProvider>
   );
@@ -73,6 +78,7 @@ Your app should be wrapped in the `AuthKitProvider` component. This component
 takes the following props:
 
 * `clientId` (required): Your `WORKOS_CLIENT_ID`
+* `apiHostname`: Defaults to `api.workos.com`. This should be set to your custom Authentication API domain in production.
 * `redirectUri`: The url that WorkOS will redirect to upon successful authentication. (Used when constructing sign-in/sign-up URLs).
 * `devMode`: Defaults to `true` if window.location is "localhost" or "127.0.0.1". Tokens will be stored in localStorage when this prop is true.
 * `onRedirectCallback`: Called after exchanging the
