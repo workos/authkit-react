@@ -32,13 +32,16 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
   const onRefresh = React.useCallback(
     ({ user, accessToken, organizationId }: AuthenticationResponse) => {
       const { role = null, permissions = [] } = getClaims(accessToken);
-      setState((prev) => ({
-        ...prev,
-        user,
-        organizationId: organizationId ?? null,
-        role,
-        permissions,
-      }));
+      setState((prev) => {
+        const next = {
+          ...prev,
+          user,
+          organizationId: organizationId ?? null,
+          role,
+          permissions,
+        };
+        return isEquivalentWorkOSSession(prev, next) ? prev : next;
+      });
     },
     [client]
   );
@@ -76,6 +79,19 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
     <Context.Provider value={{ ...client, ...state }}>
       {children}
     </Context.Provider>
+  );
+}
+
+// poor-man's "deep equality" check
+function isEquivalentWorkOSSession(
+  a: typeof initialState,
+  b: typeof initialState
+) {
+  return (
+    a.user?.updatedAt === b.user?.updatedAt &&
+    a.organizationId === b.organizationId &&
+    b.role === b.role &&
+    a.permissions.every((perm, i) => perm === b.permissions[i])
   );
 }
 
