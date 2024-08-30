@@ -5,6 +5,7 @@ import {
   AuthenticationResponse,
   createClient,
   getClaims,
+  LoginRequiredError,
 } from "@workos-inc/authkit-js";
 import { Context } from "./context";
 import { Client, CreateClientOptions } from "./types";
@@ -99,7 +100,6 @@ const NOOP_CLIENT: Client = {
   signIn: async () => {},
   signUp: async () => {},
   getUser: () => null,
-  getAccessToken: () => Promise.resolve(undefined),
-  refreshSession: async () => {},
+  getAccessToken: () => Promise.reject(new LoginRequiredError()),
   signOut: () => {},
 };
