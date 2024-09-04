@@ -31,7 +31,7 @@
     "typescript": "5.5.3"
   },
   "peerDependencies": {
-    "react": "18.3.1"
+    "react": ">=17"
   },
   "dependencies": {
     "@workos-inc/authkit-js": "0.4.1"
