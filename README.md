@@ -31,14 +31,28 @@ function Root() {
 }
 
 function App() {
-  const { user, getAccessToken, isLoading, signIn, signUp, signOut } = useAuth();
+  const { user, getAccessToken, isLoading, signIn, signUp, signOut } =
+    useAuth();
+
+  // This `/login` endpoint should be registered on the "Redirects" page of the
+  // WorkOS Dashboard.
+  // In a real app, this code would live in a route instead
+  // of in the main <App/> component
+  React.useEffect(() => {
+    if (window.location.pathname === "/login") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const context = searchParams.get("context") ?? undefined;
+      signIn({ context });
+    }
+  }, [window.location, signIn]);
+
   if (isLoading) {
-    return <Spinner />;
+    return "Loading...";
   }
 
   const performMutation = async () => {
     const accessToken = await getAccessToken();
-    console.log("api request with accessToken", accessToken);
+    alert(`API request with accessToken: ${accessToken}`);
   };
 
   if (user) {
