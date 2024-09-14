@@ -34,6 +34,6 @@
     "react": ">=17"
   },
   "dependencies": {
-    "@workos-inc/authkit-js": "0.5.0"
+    "@workos-inc/authkit-js": "0.5"
   }
 }
