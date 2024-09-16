@@ -28,6 +28,7 @@
   "homepage": "https://github.com/workos/authkit-react#readme",
   "devDependencies": {
     "@types/react": "18.3.3",
+    "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
     "tsup": "^8.1.2",
     "typescript": "5.5.3"
