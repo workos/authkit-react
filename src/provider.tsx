@@ -91,7 +91,7 @@ function isEquivalentWorkOSSession(
   return (
     a.user?.updatedAt === b.user?.updatedAt &&
     a.organizationId === b.organizationId &&
-    b.role === b.role &&
+    a.role === b.role &&
     a.permissions.every((perm, i) => perm === b.permissions[i])
   );
 }
