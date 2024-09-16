@@ -1,4 +1,4 @@
-import { User } from '@workos-inc/authkit-js';
+import { User } from "@workos-inc/authkit-js";
 
 export interface State {
   isLoading: boolean;

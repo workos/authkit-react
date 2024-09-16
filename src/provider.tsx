@@ -44,7 +44,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
         return isEquivalentWorkOSSession(prev, next) ? prev : next;
       });
     },
-    [client]
+    [client],
   );
 
   React.useEffect(() => {
@@ -86,7 +86,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
 // poor-man's "deep equality" check
 function isEquivalentWorkOSSession(
   a: typeof initialState,
-  b: typeof initialState
+  b: typeof initialState,
 ) {
   return (
     a.user?.updatedAt === b.user?.updatedAt &&
