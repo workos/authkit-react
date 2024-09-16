@@ -116,6 +116,6 @@ The following claims may be populated if the user is part of an organization:
 * `role`: The `role` of the user for the current organization.
 * `permissions`: Permissions corresponding to this role.
 
-## Impersonation support is coming soon
+## Impersonation
 
 Impersonation is not currently supported in authkit-js. We are targeting EOY 2024.
