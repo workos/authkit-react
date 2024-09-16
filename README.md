@@ -118,4 +118,4 @@ The following claims may be populated if the user is part of an organization:
 
 ## Impersonation
 
-Impersonation is not currently supported in authkit-js. We are targeting EOY 2024.
+Impersonation is not currently supported in authkit-js but is on the roadmap for 2024.
