@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 import {
   AuthenticationResponse,
   createClient,
   getClaims,
   LoginRequiredError,
-} from '@workos-inc/authkit-js';
-import { Context } from './context';
-import { Client, CreateClientOptions } from './types';
-import { initialState } from './state';
+} from "@workos-inc/authkit-js";
+import { Context } from "./context";
+import { Client, CreateClientOptions } from "./types";
+import { initialState } from "./state";
 
 interface AuthKitProviderProps extends CreateClientOptions {
   clientId: string;
