@@ -26,6 +26,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
     redirectUri,
     children,
     onRedirectCallback,
+    refreshBufferInterval,
   } = props;
   const [client, setClient] = React.useState<Client>(NOOP_CLIENT);
   const [state, setState] = React.useState(initialState);
@@ -58,6 +59,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           devMode,
           onRedirectCallback,
           onRefresh,
+          refreshBufferInterval,
         }).then(async (client) => {
           const user = client.getUser();
           setClient(client);
@@ -74,7 +76,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
     setState(initialState);
 
     return initialize();
-  }, [clientId, apiHostname, https, port, redirectUri]);
+  }, [clientId, apiHostname, https, port, redirectUri, refreshBufferInterval]);
 
   return (
     <Context.Provider value={{ ...client, ...state }}>
