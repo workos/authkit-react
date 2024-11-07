@@ -62,7 +62,13 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           refreshBufferInterval,
         }).then(async (client) => {
           const user = client.getUser();
-          setClient(client);
+          setClient({
+            getAccessToken: client.getAccessToken.bind(client),
+            getUser: client.getUser.bind(client),
+            signIn: client.signIn.bind(client),
+            signUp: client.signUp.bind(client),
+            signOut: client.signOut.bind(client),
+          });
           setState((prev) => ({ ...prev, isLoading: false, user }));
         });
       });
