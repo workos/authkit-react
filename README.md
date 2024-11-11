@@ -109,6 +109,7 @@ The `useAuth` hook returns user information and helper functions:
 - `signIn`: Redirects the user to the Hosted AuthKit sign-in page. Takes an optional `state` argument.
 - `signUp`: Redirects the user to the Hosted AuthKit sign-up page. Takes an optional `state` argument.
 - `signOut`: Ends the session.
+- `switchToOrganization`: Switches to the given organization. Redirects to the hosted login page if switch is unsuccessful.
 
 The following claims may be populated if the user is part of an organization:
 
