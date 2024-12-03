@@ -1,6 +1,6 @@
 {
   "name": "@workos-inc/authkit-react",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "AuthKit React SDK",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -28,15 +28,15 @@
   "homepage": "https://github.com/workos/authkit-react#readme",
   "devDependencies": {
     "@types/react": "18.3.3",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.1",
     "ts-node": "^10.9.2",
-    "tsup": "^8.1.2",
+    "tsup": "^8.3.5",
     "typescript": "5.5.3"
   },
   "peerDependencies": {
     "react": ">=17"
   },
   "dependencies": {
-    "@workos-inc/authkit-js": "0.7.0"
+    "@workos-inc/authkit-js": "0.7.1"
   }
 }
