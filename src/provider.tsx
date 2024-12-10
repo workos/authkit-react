@@ -25,14 +25,17 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
     port,
     redirectUri,
     children,
+    onRefresh,
+    onRefreshFailure,
     onRedirectCallback,
     refreshBufferInterval,
   } = props;
   const [client, setClient] = React.useState<Client>(NOOP_CLIENT);
   const [state, setState] = React.useState(initialState);
 
-  const onRefresh = React.useCallback(
-    ({ user, accessToken, organizationId }: AuthenticationResponse) => {
+  const handleRefresh = React.useCallback(
+    (response: AuthenticationResponse) => {
+      const { user, accessToken, organizationId } = response;
       const { role = null, permissions = [] } = getClaims(accessToken);
       setState((prev) => {
         const next = {
@@ -44,6 +47,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
         };
         return isEquivalentWorkOSSession(prev, next) ? prev : next;
       });
+      onRefresh?.(response);
     },
     [client],
   );
@@ -58,7 +62,8 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           redirectUri,
           devMode,
           onRedirectCallback,
-          onRefresh,
+          onRefresh: handleRefresh,
+          onRefreshFailure,
           refreshBufferInterval,
         }).then(async (client) => {
           const user = client.getUser();
