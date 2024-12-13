@@ -11,6 +11,9 @@ import { Context } from "./context";
 import { Client, CreateClientOptions } from "./types";
 import { initialState } from "./state";
 
+// TODO: delete this after authkit-js exports it
+type onRefreshResponse = Omit<AuthenticationResponse, "refreshToken">;
+
 interface AuthKitProviderProps extends CreateClientOptions {
   clientId: string;
   children: React.ReactNode;
@@ -34,7 +37,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
   const [state, setState] = React.useState(initialState);
 
   const handleRefresh = React.useCallback(
-    (response: AuthenticationResponse) => {
+    (response: onRefreshResponse) => {
       const { user, accessToken, organizationId } = response;
       const { role = null, permissions = [] } = getClaims(accessToken);
       setState((prev) => {

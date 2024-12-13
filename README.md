@@ -98,6 +98,7 @@ takes the following props:
 - `onRedirectCallback`: Called after exchanging the
   `authorization_code`. Can be used for things like redirecting to a "return
   to" path in the OAuth state.
+- `onRefreshFailure`: Called when the session fails to refresh. Can be used to redirect the user to the sign in page or update the UI.
 
 ### `useAuth`
 
