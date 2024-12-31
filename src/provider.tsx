@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import {
-  AuthenticationResponse,
   createClient,
   getClaims,
   LoginRequiredError,
+  OnRefreshResponse,
 } from "@workos-inc/authkit-js";
 import { Context } from "./context";
 import { Client, CreateClientOptions } from "./types";
@@ -34,7 +34,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
   const [state, setState] = React.useState(initialState);
 
   const handleRefresh = React.useCallback(
-    (response: AuthenticationResponse) => {
+    (response: OnRefreshResponse) => {
       const { user, accessToken, organizationId } = response;
       const { role = null, permissions = [] } = getClaims(accessToken);
       setState((prev) => {
