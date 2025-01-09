@@ -1,6 +1,6 @@
 {
   "name": "@workos-inc/authkit-react",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "AuthKit React SDK",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,6 +37,6 @@
     "react": ">=17"
   },
   "dependencies": {
-    "@workos-inc/authkit-js": "0.8.0"
+    "@workos-inc/authkit-js": "0.8.1"
   }
 }
