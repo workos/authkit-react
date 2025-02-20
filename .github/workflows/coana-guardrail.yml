@@ -11,18 +11,18 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v44
         with:
-          separator: ' '
- 
+          separator: " "
+
       - name: Checkout the ${{github.base_ref}} branch
         uses: actions/checkout@v4
         with:
           ref: ${{github.base_ref}} # checkout the base branch (usually master/main).
- 
+
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
- 
+
       - name: Run Coana on the ${{github.base_ref}} branch
         run: |
           npx @coana-tech/cli run . \
@@ -31,16 +31,16 @@ jobs:
             -o /tmp/main-branch \
             --changed-files ${{ steps.changed-files.outputs.all_changed_files }} \
             --lightweight-reachability \
- 
+
       # Reset file permissions changed by Coana CLI.
       - name: Reset file permissions
         run: sudo chown -R $USER:$USER .
- 
+
       - name: Checkout the current branch
         uses: actions/checkout@v4
         with:
           clean: true
- 
+
       - name: Run Coana on the current branch
         run: |
           npx @coana-tech/cli run . \
@@ -49,7 +49,7 @@ jobs:
             -o /tmp/current-branch \
             --changed-files ${{ steps.changed-files.outputs.all_changed_files }} \
             --lightweight-reachability \
- 
+
       - name: Run Report Comparison
         run: |
           npx @coana-tech/cli compare-reports \
