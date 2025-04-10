@@ -116,3 +116,46 @@ The following claims may be populated if the user is part of an organization:
 - `organizationId`: The currently-selected organization.
 - `role`: The `role` of the user for the current organization.
 - `permissions`: Permissions corresponding to this role.
+
+## Passing Data Through Authentication Flows
+
+When building authentication flows, you often need to maintain state across redirects. For example, you might want to return users to the page they were viewing before login or preserve other application state. AuthKit provides a way to pass and retrieve data through the authentication process.
+
+### Using `state`
+
+`state` is used to pass data that you need to retrieve after authentication completes
+
+```tsx
+// When signing in, pass your data using the state parameter
+function LoginButton() {
+  return (
+    <button
+      onClick={() => {
+        signIn({ state: { returnTo: "/dashboard" } });
+      }}
+    >
+      Sign in
+    </button>
+  );
+}
+
+// Then retrieve your data in the onRedirectCallback
+function App() {
+  return (
+    <AuthKitProvider
+      clientId="client_123"
+      apiHostname="auth.example.com"
+      onRedirectCallback={(state) => {
+        // Access your data here
+        if (state?.returnTo) {
+          window.location.href = state.returnTo;
+        }
+      }}
+    >
+      <YourApp />
+    </AuthKitProvider>
+  );
+}
+```
+
+This pattern works with both `signIn` and `signUp` functions.
