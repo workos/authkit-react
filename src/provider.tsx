@@ -110,11 +110,25 @@ function isEquivalentWorkOSSession(
   );
 }
 
+function noopSignOut(options?: { returnTo?: string; navigate?: true }): void;
+function noopSignOut(options?: {
+  returnTo?: string;
+  navigate: false;
+}): Promise<void>;
+function noopSignOut(options?: {
+  returnTo?: string;
+  navigate?: boolean;
+}): void | Promise<void> {
+  if (options?.navigate === false) {
+    return Promise.resolve();
+  }
+}
+
 const NOOP_CLIENT: Client = {
   signIn: async () => {},
   signUp: async () => {},
   getUser: () => null,
   getAccessToken: () => Promise.reject(new LoginRequiredError()),
   switchToOrganization: () => Promise.resolve(),
-  signOut: () => {},
+  signOut: noopSignOut,
 };
