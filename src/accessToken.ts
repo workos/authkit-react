@@ -1,4 +1,4 @@
-import { getClaims, type JwtPayload } from "@workos-inc/authkit-js";
+import { getClaims, type JWTPayload } from "@workos-inc/authkit-js";
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { useAuth } from "./hook";
 
@@ -192,7 +192,7 @@ export function useAccessToken() {
   };
 }
 
-type TokenClaims<T> = Partial<JwtPayload & T>;
+type TokenClaims<T> = Partial<JWTPayload & T>;
 
 /**
  * Extracts token claims from the access token.
