@@ -6,6 +6,7 @@ export interface State {
   role: string | null;
   organizationId: string | null;
   permissions: string[];
+  featureFlags: string[];
 }
 
 export const initialState: State = {
@@ -14,4 +15,5 @@ export const initialState: State = {
   role: null,
   organizationId: null,
   permissions: [],
+  featureFlags: [],
 };
