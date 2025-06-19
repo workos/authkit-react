@@ -116,6 +116,7 @@ The following claims may be populated if the user is part of an organization:
 - `organizationId`: The currently-selected organization.
 - `role`: The `role` of the user for the current organization.
 - `permissions`: Permissions corresponding to this role.
+- `featureFlags`: Enabled feature flags for the current organization.
 
 ## Passing Data Through Authentication Flows
 
