@@ -146,7 +146,7 @@ function App() {
     <AuthKitProvider
       clientId="client_123"
       apiHostname="auth.example.com"
-      onRedirectCallback={(state) => {
+      onRedirectCallback={({ state }) => {
         // Access your data here
         if (state?.returnTo) {
           window.location.href = state.returnTo;
