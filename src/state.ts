@@ -1,5 +1,10 @@
 import { User } from "@workos-inc/authkit-js";
 
+export interface Impersonator {
+  email: string;
+  reason: string | null;
+}
+
 export interface State {
   isLoading: boolean;
   user: User | null;
@@ -7,6 +12,7 @@ export interface State {
   organizationId: string | null;
   permissions: string[];
   featureFlags: string[];
+  impersonator: Impersonator | null;
 }
 
 export const initialState: State = {
@@ -16,4 +22,5 @@ export const initialState: State = {
   organizationId: null,
   permissions: [],
   featureFlags: [],
+  impersonator: null,
 };
