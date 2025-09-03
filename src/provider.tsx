@@ -35,20 +35,26 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
 
   const handleRefresh = React.useCallback(
     (response: OnRefreshResponse) => {
-      const { user, accessToken, organizationId } = response;
+      const {
+        user,
+        accessToken,
+        organizationId = null,
+        impersonator = null,
+      } = response;
       const {
         role = null,
         permissions = [],
-        feature_flags = [],
+        feature_flags: featureFlags = [],
       } = getClaims(accessToken);
       setState((prev) => {
         const next = {
           ...prev,
           user,
-          organizationId: organizationId ?? null,
+          organizationId,
           role,
           permissions,
-          featureFlags: feature_flags,
+          featureFlags,
+          impersonator,
         };
         return isEquivalentWorkOSSession(prev, next) ? prev : next;
       });
@@ -114,7 +120,9 @@ function isEquivalentWorkOSSession(
     a.permissions.length === b.permissions.length &&
     a.permissions.every((perm, i) => perm === b.permissions[i]) &&
     a.featureFlags.length === b.featureFlags.length &&
-    a.featureFlags.every((flag, i) => flag === b.featureFlags[i])
+    a.featureFlags.every((flag, i) => flag === b.featureFlags[i]) &&
+    a.impersonator?.email === b.impersonator?.email &&
+    a.impersonator?.reason === b.impersonator?.reason
   );
 }
 
