@@ -43,6 +43,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
       } = response;
       const {
         role = null,
+        roles = null,
         permissions = [],
         feature_flags: featureFlags = [],
       } = getClaims(accessToken);
@@ -52,6 +53,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           user,
           organizationId,
           role,
+          roles,
           permissions,
           featureFlags,
           impersonator,
@@ -117,6 +119,7 @@ function isEquivalentWorkOSSession(
     a.user?.updatedAt === b.user?.updatedAt &&
     a.organizationId === b.organizationId &&
     a.role === b.role &&
+    a.roles === b.roles &&
     a.permissions.length === b.permissions.length &&
     a.permissions.every((perm, i) => perm === b.permissions[i]) &&
     a.featureFlags.length === b.featureFlags.length &&

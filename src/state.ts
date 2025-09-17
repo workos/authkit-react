@@ -9,6 +9,7 @@ export interface State {
   isLoading: boolean;
   user: User | null;
   role: string | null;
+  roles: string[] | null;
   organizationId: string | null;
   permissions: string[];
   featureFlags: string[];
@@ -19,6 +20,7 @@ export const initialState: State = {
   isLoading: true,
   user: null,
   role: null,
+  roles: null,
   organizationId: null,
   permissions: [],
   featureFlags: [],
