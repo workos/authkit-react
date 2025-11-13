@@ -7,9 +7,9 @@ import {
   LoginRequiredError,
   OnRefreshResponse,
 } from "@workos-inc/authkit-js";
-import { Context } from "./context";
-import { Client, CreateClientOptions } from "./types";
-import { initialState } from "./state";
+import { AuthKitContext } from "./context";
+import type { Client, CreateClientOptions } from "./client";
+import { INITIAL_STATE, LOADING_STATE, State } from "./state";
 
 interface AuthKitProviderProps extends CreateClientOptions {
   clientId: string;
@@ -31,7 +31,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
     refreshBufferInterval,
   } = props;
   const [client, setClient] = React.useState<Client>(NOOP_CLIENT);
-  const [state, setState] = React.useState(initialState);
+  const [state, setState] = React.useState<State>(INITIAL_STATE);
 
   const handleRefresh = React.useCallback(
     (response: OnRefreshResponse) => {
@@ -49,7 +49,8 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
       } = getClaims(accessToken);
       setState((prev) => {
         const next = {
-          ...prev,
+          status: "authenticated-refreshed",
+          isLoading: false,
           user,
           organizationId,
           role,
@@ -57,7 +58,8 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           permissions,
           featureFlags,
           impersonator,
-        };
+          accessToken,
+        } satisfies State;
         return isEquivalentWorkOSSession(prev, next) ? prev : next;
       });
       onRefresh?.(response);
@@ -66,8 +68,9 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
   );
 
   React.useEffect(() => {
+    let isCurrentRun = true;
     function initialize() {
-      const timeoutId = setTimeout(() => {
+      const timeoutId = window.setTimeout(() => {
         createClient(clientId, {
           apiHostname,
           port,
@@ -78,7 +81,11 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           onRefresh: handleRefresh,
           onRefreshFailure,
           refreshBufferInterval,
-        }).then(async (client) => {
+        }).then((client) => {
+          if (!isCurrentRun) {
+            return;
+          }
+
           const user = client.getUser();
           setClient({
             getAccessToken: client.getAccessToken.bind(client),
@@ -88,54 +95,48 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
             signOut: client.signOut.bind(client),
             switchToOrganization: client.switchToOrganization.bind(client),
           });
-          setState((prev) => ({ ...prev, isLoading: false, user }));
+          setState((prev) =>
+            user
+              ? {
+                  ...prev,
+                  status: "authenticated",
+                  isLoading: false,
+                  user,
+                }
+              : {
+                  ...prev,
+                  status: "unauthenticated",
+                  isLoading: false,
+                  user: null,
+                  accessToken: null,
+                },
+          );
         });
       });
 
       return () => {
-        clearTimeout(timeoutId);
+        isCurrentRun = false;
+        window.clearTimeout(timeoutId);
       };
     }
 
     setClient(NOOP_CLIENT);
-    setState(initialState);
+    setState(LOADING_STATE);
 
     return initialize();
   }, [clientId, apiHostname, https, port, redirectUri, refreshBufferInterval]);
 
-  const [accessToken, setAccessToken] = React.useState<string | null>(null);
-  React.useEffect(() => {
-    const handleAccessTokenChange = (
-      event: CustomEvent<{ accessToken: string }>,
-    ) => {
-      setAccessToken(event.detail.accessToken);
-    };
-
-    // authkit-js emits a "authkit:tokenchange" event when the access token is
-    // refreshed. We want to use this to update the state with the new access
-    // token so that it is available and up-to-date at render-time.
-    window.addEventListener("authkit:tokenchange", handleAccessTokenChange);
-    return () => {
-      window.removeEventListener(
-        "authkit:tokenchange",
-        handleAccessTokenChange,
-      );
-    };
-  }, []);
-
   return (
-    <Context.Provider value={{ ...client, ...state, accessToken }}>
+    <AuthKitContext.Provider value={{ client, state }}>
       {children}
-    </Context.Provider>
+    </AuthKitContext.Provider>
   );
 }
 
 // poor-man's "deep equality" check
-function isEquivalentWorkOSSession(
-  a: typeof initialState,
-  b: typeof initialState,
-) {
+function isEquivalentWorkOSSession(a: State, b: State) {
   return (
+    a.status === b.status &&
     a.user?.updatedAt === b.user?.updatedAt &&
     a.organizationId === b.organizationId &&
     a.role === b.role &&
@@ -145,7 +146,8 @@ function isEquivalentWorkOSSession(
     a.featureFlags.length === b.featureFlags.length &&
     a.featureFlags.every((flag, i) => flag === b.featureFlags[i]) &&
     a.impersonator?.email === b.impersonator?.email &&
-    a.impersonator?.reason === b.impersonator?.reason
+    a.impersonator?.reason === b.impersonator?.reason &&
+    a.accessToken === b.accessToken
   );
 }
 
