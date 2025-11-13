@@ -157,21 +157,3 @@ const NOOP_CLIENT: Client = {
   switchToOrganization: () => Promise.resolve(),
   signOut: async () => {},
 };
-
-// TODO: Move this to a global declaration file. Requires some re-configuring of tsconfig.json.
-declare global {
-  interface CustomEventMap {
-    "authkit:tokenchange": CustomEvent<{ accessToken: string }>;
-  }
-  interface Window {
-    addEventListener<K extends keyof CustomEventMap>(
-      type: K,
-      listener: (this: Document, ev: CustomEventMap[K]) => void,
-    ): void;
-    removeEventListener<K extends keyof CustomEventMap>(
-      type: K,
-      listener: (this: Document, ev: CustomEventMap[K]) => void,
-    ): void;
-    dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K]): void;
-  }
-}
