@@ -103,8 +103,28 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
     return initialize();
   }, [clientId, apiHostname, https, port, redirectUri, refreshBufferInterval]);
 
+  const [accessToken, setAccessToken] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    const handleAccessTokenChange = (
+      event: CustomEvent<{ accessToken: string }>,
+    ) => {
+      setAccessToken(event.detail.accessToken);
+    };
+
+    // authkit-js emits a "authkit:tokenchange" event when the access token is
+    // refreshed. We want to use this to update the state with the new access
+    // token so that it is available and up-to-date at render-time.
+    window.addEventListener("authkit:tokenchange", handleAccessTokenChange);
+    return () => {
+      window.removeEventListener(
+        "authkit:tokenchange",
+        handleAccessTokenChange,
+      );
+    };
+  }, []);
+
   return (
-    <Context.Provider value={{ ...client, ...state }}>
+    <Context.Provider value={{ ...client, ...state, accessToken }}>
       {children}
     </Context.Provider>
   );
@@ -137,3 +157,21 @@ const NOOP_CLIENT: Client = {
   switchToOrganization: () => Promise.resolve(),
   signOut: async () => {},
 };
+
+// TODO: Move this to a global declaration file. Requires some re-configuring of tsconfig.json.
+declare global {
+  interface CustomEventMap {
+    "authkit:tokenchange": CustomEvent<{ accessToken: string }>;
+  }
+  interface Window {
+    addEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void,
+    ): void;
+    removeEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void,
+    ): void;
+    dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K]): void;
+  }
+}
