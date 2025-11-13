@@ -16,6 +16,9 @@ interface AuthKitProviderProps extends CreateClientOptions {
   children: React.ReactNode;
 }
 
+const NO_PERMISSIONS: string[] = [];
+const NO_FEATURE_FLAGS: string[] = [];
+
 export function AuthKitProvider(props: AuthKitProviderProps) {
   const {
     clientId,
@@ -44,23 +47,31 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
       const {
         role = null,
         roles = null,
-        permissions = [],
-        feature_flags: featureFlags = [],
+        permissions = NO_PERMISSIONS,
+        feature_flags: featureFlags = NO_FEATURE_FLAGS,
       } = getClaims(accessToken);
       setState((prev) => {
-        const next = {
+        return {
           status: "authenticated-refreshed",
           isLoading: false,
           user,
           organizationId,
           role,
-          roles,
-          permissions,
-          featureFlags,
+          roles:
+            prev.roles === null ||
+            roles === null ||
+            !isEquivalentArray(prev.roles, roles)
+              ? roles
+              : prev.roles,
+          permissions: isEquivalentArray(prev.permissions, permissions)
+            ? prev.permissions
+            : permissions,
+          featureFlags: isEquivalentArray(prev.featureFlags, featureFlags)
+            ? prev.featureFlags
+            : featureFlags,
           impersonator,
           accessToken,
         } satisfies State;
-        return isEquivalentWorkOSSession(prev, next) ? prev : next;
       });
       onRefresh?.(response);
     },
@@ -133,22 +144,8 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
   );
 }
 
-// poor-man's "deep equality" check
-function isEquivalentWorkOSSession(a: State, b: State) {
-  return (
-    a.status === b.status &&
-    a.user?.updatedAt === b.user?.updatedAt &&
-    a.organizationId === b.organizationId &&
-    a.role === b.role &&
-    a.roles === b.roles &&
-    a.permissions.length === b.permissions.length &&
-    a.permissions.every((perm, i) => perm === b.permissions[i]) &&
-    a.featureFlags.length === b.featureFlags.length &&
-    a.featureFlags.every((flag, i) => flag === b.featureFlags[i]) &&
-    a.impersonator?.email === b.impersonator?.email &&
-    a.impersonator?.reason === b.impersonator?.reason &&
-    a.accessToken === b.accessToken
-  );
+function isEquivalentArray(a: string[], b: string[]) {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
 }
 
 const NOOP_CLIENT: Client = {
