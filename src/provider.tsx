@@ -88,7 +88,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
             signOut: client.signOut.bind(client),
             switchToOrganization: client.switchToOrganization.bind(client),
             getSignInUrl: client.getSignInUrl.bind(client),
-            getSignUpUrl: client.getSignUpUrl.bind(client)
+            getSignUpUrl: client.getSignUpUrl.bind(client),
           });
           setState((prev) => ({ ...prev, isLoading: false, user }));
         });
@@ -138,6 +138,6 @@ const NOOP_CLIENT: Client = {
   getAccessToken: () => Promise.reject(new LoginRequiredError()),
   switchToOrganization: () => Promise.resolve(),
   signOut: async () => {},
-  getSignInUrl: async () => '',
-  getSignUpUrl: async () => ''
+  getSignInUrl: async () => "",
+  getSignUpUrl: async () => "",
 };
