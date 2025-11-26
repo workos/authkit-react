@@ -138,4 +138,6 @@ const NOOP_CLIENT: Client = {
   getAccessToken: () => Promise.reject(new LoginRequiredError()),
   switchToOrganization: () => Promise.resolve(),
   signOut: async () => {},
+  getSignInUrl: async () => '',
+  getSignUpUrl: async () => ''
 };
