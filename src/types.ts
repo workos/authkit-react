@@ -8,6 +8,8 @@ export type Client = Pick<
   | "getAccessToken"
   | "signOut"
   | "switchToOrganization"
+  | "getSignInUrl"
+  | "getSignUpUrl"
 >;
 
 export type CreateClientOptions = NonNullable<
