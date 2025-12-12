@@ -1,6 +1,10 @@
 export { useAuth } from "./hook";
 export { AuthKitProvider } from "./provider";
-export { getClaims, AuthKitError, LoginRequiredError } from "@workos-inc/authkit-js";
+export {
+  getClaims,
+  AuthKitError,
+  LoginRequiredError,
+} from "@workos-inc/authkit-js";
 export type {
   User,
   AuthenticationResponse,
