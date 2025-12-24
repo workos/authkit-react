@@ -1,4 +1,4 @@
-import { User } from "@workos-inc/authkit-js";
+import { User, AuthenticationMethod } from "@workos-inc/authkit-js";
 
 export interface Impersonator {
   email: string;
@@ -14,6 +14,7 @@ export interface State {
   permissions: string[];
   featureFlags: string[];
   impersonator: Impersonator | null;
+  authenticationMethod: AuthenticationMethod | null;
 }
 
 export const initialState: State = {
@@ -25,4 +26,5 @@ export const initialState: State = {
   permissions: [],
   featureFlags: [],
   impersonator: null,
+  authenticationMethod: null,
 };

@@ -40,6 +40,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
         accessToken,
         organizationId = null,
         impersonator = null,
+        authenticationMethod = null,
       } = response;
       const {
         role = null,
@@ -57,6 +58,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           permissions,
           featureFlags,
           impersonator,
+          authenticationMethod,
         };
         return isEquivalentWorkOSSession(prev, next) ? prev : next;
       });
@@ -127,7 +129,8 @@ function isEquivalentWorkOSSession(
     a.featureFlags.length === b.featureFlags.length &&
     a.featureFlags.every((flag, i) => flag === b.featureFlags[i]) &&
     a.impersonator?.email === b.impersonator?.email &&
-    a.impersonator?.reason === b.impersonator?.reason
+    a.impersonator?.reason === b.impersonator?.reason &&
+    a.authenticationMethod === b.authenticationMethod
   );
 }
 

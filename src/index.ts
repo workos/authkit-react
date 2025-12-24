@@ -7,6 +7,7 @@ export {
 } from "@workos-inc/authkit-js";
 export type {
   User,
+  AuthenticationMethod,
   AuthenticationResponse,
   JWTPayload,
   OnRefreshResponse,
