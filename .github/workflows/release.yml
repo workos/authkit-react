@@ -12,7 +12,7 @@ defaults:
     shell: bash
 
 jobs:
-  test:
+  publish:
     name: Publish to NPM
     runs-on: ubuntu-latest
     permissions:
