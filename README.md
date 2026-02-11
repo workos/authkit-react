@@ -1,4 +1,6 @@
-# AuthKit React Library
+# AuthKit React
+
+Add authentication to your React app with WorkOS AuthKit. Handles sign-in, sign-up, token refresh, and session management via a hosted OAuth flow.
 
 ## Installation
 
@@ -6,157 +8,289 @@
 npm install @workos-inc/authkit-react
 ```
 
-or
+## Quick Start
 
-```bash
-yarn add @workos-inc/authkit-react
-```
+### 1. Configure the WorkOS Dashboard
 
-## Setup
+- Add a **Redirect URI** (e.g. `http://localhost:5173`) on the **Redirects** page. This is where WorkOS sends users after they authenticate.
+- Add your app's origin (e.g. `http://localhost:5173`) to the allowed origins list on the **Authentication** page of the [WorkOS Dashboard](https://dashboard.workos.com).
 
-Add your site's URL to the list of allowed origins in the WorkOS dashboard by
-clicking on the "Configure CORS" button of the "Authentication" page.
-
-## Usage
+### 2. Wrap your app in `AuthKitProvider`
 
 ```jsx
-import { useAuth, AuthKitProvider } from "@workos-inc/authkit-react";
+import { AuthKitProvider } from "@workos-inc/authkit-react";
+import { createRoot } from "react-dom/client";
 
-function Root() {
-  return (
-    <AuthKitProvider clientId="client_123456" apiHostname="auth.example.com">
-      <App />
-    </AuthKitProvider>
-  );
+createRoot(document.getElementById("root")).render(
+  <AuthKitProvider clientId="client_01ABC123DEF456">
+    <App />
+  </AuthKitProvider>
+);
+```
+
+### 3. Add a `/login` route
+
+Some authentication flows are initiated outside your app — for example, when an admin impersonates a user from the WorkOS Dashboard, or when a third-party triggers login via your app's sign-in endpoint. These flows redirect the user to a well-known login path in your app, which must then start the OAuth flow.
+
+Register a `/login` URL (e.g. `http://localhost:5173/login`) as the **sign-in endpoint** on the same **Redirects** page, then handle it in your app:
+
+```jsx
+import { useAuth } from "@workos-inc/authkit-react";
+import { useEffect } from "react";
+
+function LoginRoute() {
+  const { signIn } = useAuth();
+
+  useEffect(() => {
+    signIn();
+  }, [signIn]);
+
+  return <div>Redirecting...</div>;
 }
+```
+
+In a router-based app this would be a dedicated route component. In a simple app you can handle it inline:
+
+```jsx
+function App() {
+  const { isLoading, user, signIn } = useAuth();
+
+  useEffect(() => {
+    if (window.location.pathname === "/login") {
+      signIn();
+    }
+  }, [signIn]);
+
+  // ... rest of your app
+}
+```
+
+### 4. Use the `useAuth` hook
+
+```jsx
+import { useAuth } from "@workos-inc/authkit-react";
 
 function App() {
-  const { user, getAccessToken, isLoading, signIn, signUp, signOut } =
+  const { isLoading, user, signIn, signUp, signOut, getAccessToken } =
     useAuth();
 
-  // This `/login` endpoint should be registered on the "Redirects" page of the
-  // WorkOS Dashboard.
-  // In a real app, this code would live in a route instead
-  // of in the main <App/> component
-  React.useEffect(() => {
-    if (window.location.pathname === "/login") {
-      const searchParams = new URLSearchParams(window.location.search);
-      const context = searchParams.get("context") ?? undefined;
-      signIn({ context });
-    }
-  }, [window.location, signIn]);
+  if (isLoading) return <div>Loading...</div>;
 
-  if (isLoading) {
-    return "Loading...";
-  }
-
-  const performMutation = async () => {
-    const accessToken = await getAccessToken();
-    alert(`API request with accessToken: ${accessToken}`);
-  };
-
-  if (user) {
+  if (!user) {
     return (
       <div>
-        Hello, {user.email}
-        <p>
-          <button
-            onClick={() => {
-              performMutation();
-            }}
-          >
-            Make API Request
-          </button>
-        </p>
-        <p>
-          <button onClick={() => signOut()}>Sign out</button>
-        </p>
+        <button onClick={() => signIn()}>Sign In</button>
+        <button onClick={() => signUp()}>Sign Up</button>
       </div>
     );
   }
 
   return (
-    <>
-      <button onClick={() => signIn()}>Sign in</button>{" "}
-      <button onClick={() => signUp()}>Sign up</button>
-    </>
+    <div>
+      <p>Hello, {user.firstName ?? user.email}</p>
+      <button onClick={() => signOut()}>Sign Out</button>
+    </div>
   );
 }
 ```
 
-## Reference
+That's it — you have a fully authenticated React app.
+
+## API Reference
 
 ### `<AuthKitProvider />`
 
-Your app should be wrapped in the `AuthKitProvider` component. This component
-takes the following props:
+Wrap your app in this component to provide authentication context.
 
-- `clientId` (required): Your `WORKOS_CLIENT_ID`
-- `apiHostname`: Defaults to `api.workos.com`. This should be set to your custom Authentication API domain in production.
-- `redirectUri`: The url that WorkOS will redirect to upon successful authentication. (Used when constructing sign-in/sign-up URLs).
-- `devMode`: Defaults to `true` if window.location is "localhost" or "127.0.0.1". Tokens will be stored in localStorage when this prop is true.
-- `onRedirectCallback`: Called after exchanging the
-  `authorization_code`. Can be used for things like redirecting to a "return
-  to" path in the OAuth state.
+| Prop          | Type     | Required | Description                                                                                                                                     |
+|---------------|----------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| `clientId`    | `string` | Yes      | Your WorkOS Client ID (starts with `client_`)                                                                                                   |
+| `apiHostname` | `string` | No       | Your custom Authentication API domain. Defaults to api.workos.com. In production, this should be set to a domain you own (e.g. auth.example.com) |
+| `devMode`               | `boolean`              | No | Stores tokens in localStorage. Auto-enabled on `localhost` and `127.0.0.1`.      |
+| `onRedirectCallback`    | `(params) => void`     | No | Called after a successful authentication. Use to restore app state or navigate.  |
+| `onRefresh`             | `(response) => void`   | No | Called when the access token is refreshed.                                       |
+| `onRefreshFailure`      | `({ signIn }) => void` | No | Called when token refresh fails. Receives `signIn` to trigger re-authentication. |
+| `onBeforeAutoRefresh`   | `() => boolean`        | No | Called before automatic refresh. Return `false` to skip.                         |
+| `refreshBufferInterval` | `number`               | No | Seconds before token expiration to trigger refresh.                              |
 
-### `useAuth`
+### `useAuth()`
 
-The `useAuth` hook returns user information and helper functions:
+Returns the current auth state and helper methods. Must be called inside `<AuthKitProvider>`.
 
-- `isLoading`: true while user information is being obtained from fetch during initial load.
-- `user`: The WorkOS `User` object for this session.
-- `getAccessToken`: Returns an access token. Will fetch a fresh access token if necessary.
-- `signIn`: Redirects the user to the Hosted AuthKit sign-in page. Takes an optional `state` argument.
-- `signUp`: Redirects the user to the Hosted AuthKit sign-up page. Takes an optional `state` argument.
-- `signOut`: Ends the session.
-- `switchToOrganization`: Switches to the given organization. Redirects to the hosted login page if switch is unsuccessful.
+#### State
 
-The following claims may be populated if the user is part of an organization:
+| Property | Type | Description |
+|----------|------|-------------|
+| `isLoading` | `boolean` | `true` during initial authentication check |
+| `user` | `User \| null` | The authenticated user, or `null` |
+| `organizationId` | `string \| null` | The user's current organization |
+| `role` | `string \| null` | The user's role in the current organization |
+| `roles` | `string[] \| null` | All roles for the user in the current organization |
+| `permissions` | `string[]` | Permissions for the user's role |
+| `featureFlags` | `string[]` | Feature flags enabled for the organization |
+| `impersonator` | `Impersonator \| null` | Set when an admin is impersonating this user |
+| `authenticationMethod` | `AuthenticationMethod \| null` | How the user authenticated (e.g. `"GoogleOAuth"`, `"SSO"`) |
 
-- `organizationId`: The currently-selected organization.
-- `role`: The `role` of the user for the current organization.
-- `permissions`: Permissions corresponding to this role.
-- `featureFlags`: Enabled feature flags for the current organization.
+#### Methods
 
-## Passing Data Through Authentication Flows
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `signIn` | `(opts?) => Promise<void>` | Redirect to the AuthKit sign-in page |
+| `signUp` | `(opts?) => Promise<void>` | Redirect to the AuthKit sign-up page |
+| `signOut` | `(opts?) => void` | End the session and sign the user out |
+| `getAccessToken` | `(opts?) => Promise<string>` | Get a valid access token, refreshing if needed |
+| `getUser` | `() => User \| null` | Synchronously get the current user |
+| `switchToOrganization` | `({ organizationId, signInOpts? }) => Promise<void>` | Switch to a different organization |
+| `getSignInUrl` | `(opts?) => Promise<string>` | Get the sign-in URL without redirecting |
+| `getSignUpUrl` | `(opts?) => Promise<string>` | Get the sign-up URL without redirecting |
 
-When building authentication flows, you often need to maintain state across redirects. For example, you might want to return users to the page they were viewing before login or preserve other application state. AuthKit provides a way to pass and retrieve data through the authentication process.
+#### `signIn` / `signUp` Options
 
-### Using `state`
-
-`state` is used to pass data that you need to retrieve after authentication completes
-
-```tsx
-// When signing in, pass your data using the state parameter
-function LoginButton() {
-  return (
-    <button
-      onClick={() => {
-        signIn({ state: { returnTo: "/dashboard" } });
-      }}
-    >
-      Sign in
-    </button>
-  );
+```ts
+{
+  state?: any;                // Data to persist through the auth flow
+  organizationId?: string;    // Pre-select an organization
+  loginHint?: string;         // Pre-fill the email field
+  invitationToken?: string;   // Accept an invitation during sign-up
+  screenHint?: "sign-in" | "sign-up"; // Which screen to show
 }
+```
 
-// Then retrieve your data in the onRedirectCallback
-function App() {
+#### `signOut` Options
+
+```ts
+{
+  returnTo?: string;   // URL to navigate to after sign-out
+}
+```
+
+### `User`
+
+```ts
+interface User {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  profilePictureUrl: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  createdAt: string;
+  updatedAt: string;
+  lastSignInAt: string | null;
+  externalId: string | undefined;
+}
+```
+
+### `getClaims(accessToken)`
+
+Decodes a JWT access token and returns its claims.
+
+```ts
+import { getClaims } from "@workos-inc/authkit-react";
+
+const token = await getAccessToken();
+const claims = getClaims(token);
+// claims.sub, claims.org_id, claims.role, claims.permissions, etc.
+```
+
+### Error Classes
+
+- **`AuthKitError`** — Base error class for AuthKit errors.
+- **`LoginRequiredError`** — Thrown by `getAccessToken()` when no user is authenticated.
+
+## Recipes
+
+### Making Authenticated API Calls
+
+```jsx
+function Dashboard() {
+  const { getAccessToken } = useAuth();
+
+  async function fetchData() {
+    const token = await getAccessToken();
+    const res = await fetch("/api/data", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  }
+
+  // ...
+}
+```
+
+### Passing Data Through Auth Flows
+
+Use `state` to preserve data across the authentication redirect:
+
+```jsx
+// Pass state when starting sign-in
+<button onClick={() => signIn({ state: { returnTo: "/dashboard" } })}>
+  Sign In
+</button>
+```
+
+```jsx
+// Retrieve it in onRedirectCallback
+<AuthKitProvider
+  clientId="client_01ABC123DEF456"
+  onRedirectCallback={({ state }) => {
+    if (state?.returnTo) {
+      window.location.href = state.returnTo;
+    }
+  }}
+>
+  <App />
+</AuthKitProvider>
+```
+
+### Handling Token Refresh Failures
+
+```jsx
+<AuthKitProvider
+  clientId="client_01ABC123DEF456"
+  onRefreshFailure={({ signIn }) => {
+    // Session expired — prompt re-authentication
+    signIn();
+  }}
+>
+  <App />
+</AuthKitProvider>
+```
+
+### Multi-Organization Switching
+
+```jsx
+function OrgSwitcher({ organizations }) {
+  const { switchToOrganization, organizationId } = useAuth();
+
   return (
-    <AuthKitProvider
-      clientId="client_123"
-      apiHostname="auth.example.com"
-      onRedirectCallback={({ state }) => {
-        // Access your data here
-        if (state?.returnTo) {
-          window.location.href = state.returnTo;
-        }
-      }}
+    <select
+      value={organizationId ?? ""}
+      onChange={(e) => switchToOrganization({ organizationId: e.target.value })}
     >
-      <YourApp />
-    </AuthKitProvider>
+      {organizations.map((org) => (
+        <option key={org.id} value={org.id}>
+          {org.name}
+        </option>
+      ))}
+    </select>
   );
 }
 ```
 
-This pattern works with both `signIn` and `signUp` functions.
+### Role-Based UI
+
+```jsx
+function AdminPanel() {
+  const { role, permissions } = useAuth();
+
+  if (role !== "admin") return null;
+
+  return (
+    <div>
+      <h2>Admin Panel</h2>
+      {permissions.includes("users:manage") && <UserManagement />}
+    </div>
+  );
+}
+```
