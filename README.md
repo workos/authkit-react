@@ -24,7 +24,7 @@ import { createRoot } from "react-dom/client";
 createRoot(document.getElementById("root")).render(
   <AuthKitProvider clientId="client_01ABC123DEF456">
     <App />
-  </AuthKitProvider>
+  </AuthKitProvider>,
 );
 ```
 
@@ -102,16 +102,16 @@ That's it — you have a fully authenticated React app.
 
 Wrap your app in this component to provide authentication context.
 
-| Prop          | Type     | Required | Description                                                                                                                                     |
-|---------------|----------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `clientId`    | `string` | Yes      | Your WorkOS Client ID (starts with `client_`)                                                                                                   |
-| `apiHostname` | `string` | No       | Your custom Authentication API domain. Defaults to api.workos.com. In production, this should be set to a domain you own (e.g. auth.example.com) |
-| `devMode`               | `boolean`              | No | Stores tokens in localStorage. Auto-enabled on `localhost` and `127.0.0.1`.      |
-| `onRedirectCallback`    | `(params) => void`     | No | Called after a successful authentication. Use to restore app state or navigate.  |
-| `onRefresh`             | `(response) => void`   | No | Called when the access token is refreshed.                                       |
-| `onRefreshFailure`      | `({ signIn }) => void` | No | Called when token refresh fails. Receives `signIn` to trigger re-authentication. |
-| `onBeforeAutoRefresh`   | `() => boolean`        | No | Called before automatic refresh. Return `false` to skip.                         |
-| `refreshBufferInterval` | `number`               | No | Seconds before token expiration to trigger refresh.                              |
+| Prop                    | Type                   | Required | Description                                                                                                                                      |
+| ----------------------- | ---------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `clientId`              | `string`               | Yes      | Your WorkOS Client ID (starts with `client_`)                                                                                                    |
+| `apiHostname`           | `string`               | No       | Your custom Authentication API domain. Defaults to api.workos.com. In production, this should be set to a domain you own (e.g. auth.example.com) |
+| `devMode`               | `boolean`              | No       | Stores tokens in localStorage. Auto-enabled on `localhost` and `127.0.0.1`.                                                                      |
+| `onRedirectCallback`    | `(params) => void`     | No       | Called after a successful authentication. Use to restore app state or navigate.                                                                  |
+| `onRefresh`             | `(response) => void`   | No       | Called when the access token is refreshed.                                                                                                       |
+| `onRefreshFailure`      | `({ signIn }) => void` | No       | Called when token refresh fails. Receives `signIn` to trigger re-authentication.                                                                 |
+| `onBeforeAutoRefresh`   | `() => boolean`        | No       | Called before automatic refresh. Return `false` to skip.                                                                                         |
+| `refreshBufferInterval` | `number`               | No       | Seconds before token expiration to trigger refresh.                                                                                              |
 
 ### `useAuth()`
 
@@ -119,30 +119,30 @@ Returns the current auth state and helper methods. Must be called inside `<AuthK
 
 #### State
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `isLoading` | `boolean` | `true` during initial authentication check |
-| `user` | `User \| null` | The authenticated user, or `null` |
-| `organizationId` | `string \| null` | The user's current organization |
-| `role` | `string \| null` | The user's role in the current organization |
-| `roles` | `string[] \| null` | All roles for the user in the current organization |
-| `permissions` | `string[]` | Permissions for the user's role |
-| `featureFlags` | `string[]` | Feature flags enabled for the organization |
-| `impersonator` | `Impersonator \| null` | Set when an admin is impersonating this user |
+| Property               | Type                           | Description                                                |
+| ---------------------- | ------------------------------ | ---------------------------------------------------------- |
+| `isLoading`            | `boolean`                      | `true` during initial authentication check                 |
+| `user`                 | `User \| null`                 | The authenticated user, or `null`                          |
+| `organizationId`       | `string \| null`               | The user's current organization                            |
+| `role`                 | `string \| null`               | The user's role in the current organization                |
+| `roles`                | `string[] \| null`             | All roles for the user in the current organization         |
+| `permissions`          | `string[]`                     | Permissions for the user's role                            |
+| `featureFlags`         | `string[]`                     | Feature flags enabled for the organization                 |
+| `impersonator`         | `Impersonator \| null`         | Set when an admin is impersonating this user               |
 | `authenticationMethod` | `AuthenticationMethod \| null` | How the user authenticated (e.g. `"GoogleOAuth"`, `"SSO"`) |
 
 #### Methods
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `signIn` | `(opts?) => Promise<void>` | Redirect to the AuthKit sign-in page |
-| `signUp` | `(opts?) => Promise<void>` | Redirect to the AuthKit sign-up page |
-| `signOut` | `(opts?) => void` | End the session and sign the user out |
-| `getAccessToken` | `(opts?) => Promise<string>` | Get a valid access token, refreshing if needed |
-| `getUser` | `() => User \| null` | Synchronously get the current user |
-| `switchToOrganization` | `({ organizationId, signInOpts? }) => Promise<void>` | Switch to a different organization |
-| `getSignInUrl` | `(opts?) => Promise<string>` | Get the sign-in URL without redirecting |
-| `getSignUpUrl` | `(opts?) => Promise<string>` | Get the sign-up URL without redirecting |
+| Method                 | Signature                                            | Description                                    |
+| ---------------------- | ---------------------------------------------------- | ---------------------------------------------- |
+| `signIn`               | `(opts?) => Promise<void>`                           | Redirect to the AuthKit sign-in page           |
+| `signUp`               | `(opts?) => Promise<void>`                           | Redirect to the AuthKit sign-up page           |
+| `signOut`              | `(opts?) => void`                                    | End the session and sign the user out          |
+| `getAccessToken`       | `(opts?) => Promise<string>`                         | Get a valid access token, refreshing if needed |
+| `getUser`              | `() => User \| null`                                 | Synchronously get the current user             |
+| `switchToOrganization` | `({ organizationId, signInOpts? }) => Promise<void>` | Switch to a different organization             |
+| `getSignInUrl`         | `(opts?) => Promise<string>`                         | Get the sign-in URL without redirecting        |
+| `getSignUpUrl`         | `(opts?) => Promise<string>`                         | Get the sign-up URL without redirecting        |
 
 #### `signIn` / `signUp` Options
 
