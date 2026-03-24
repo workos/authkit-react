@@ -1,0 +1,26 @@
+{
+  "extends": ["config:recommended"],
+  "schedule": ["on the 15th day of the month before 12pm"],
+  "timezone": "UTC",
+  "rebaseWhen": "conflicted",
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "extractVersion": "^v(?<version>\\d+\\.\\d+\\.\\d+)$",
+      "groupName": "github-actions"
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "groupName": "minor and patch updates"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": ["digest"],
+      "automerge": false
+    }
+  ]
+}
