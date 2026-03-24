@@ -3,13 +3,13 @@ name: Socket Tier 1 Reachability Analysis
 on:
   schedule:
     # every day at 12 AM
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       tags:
-        description: 'Manually run vulnerability analysis'
+        description: "Manually run vulnerability analysis"
       distinct_id:
-        description: 'Required by the return-dispatch action'
+        description: "Required by the return-dispatch action"
         required: true
 
 concurrency:
