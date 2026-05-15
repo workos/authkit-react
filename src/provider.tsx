@@ -93,6 +93,9 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
             getSignUpUrl: client.getSignUpUrl.bind(client),
           });
           setState((prev) => ({ ...prev, isLoading: false, user }));
+        })
+        .catch(() => {
+          setState((prev) => ({ ...prev, isLoading: false }));
         });
       });
 
