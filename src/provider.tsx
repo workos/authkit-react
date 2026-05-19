@@ -82,7 +82,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           refreshBufferInterval,
         }).then(async (client) => {
           const user = client.getUser();
-          setClient({
+          const boundClient = {
             getAccessToken: client.getAccessToken.bind(client),
             getUser: client.getUser.bind(client),
             signIn: client.signIn.bind(client),
@@ -91,8 +91,35 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
             switchToOrganization: client.switchToOrganization.bind(client),
             getSignInUrl: client.getSignInUrl.bind(client),
             getSignUpUrl: client.getSignUpUrl.bind(client),
-          });
-          setState((prev) => ({ ...prev, isLoading: false, user }));
+          };
+          setClient(boundClient);
+
+          // Read auth metadata from the access token so state is
+          // fully populated even if onRefresh fired before this
+          // callback ran and React batched away the earlier update.
+          try {
+            const accessToken = await client.getAccessToken();
+            const {
+              org_id: organizationId = null,
+              role = null,
+              roles = null,
+              permissions = [],
+              feature_flags: featureFlags = [],
+            } = getClaims(accessToken);
+            setState((prev) => ({
+              ...prev,
+              isLoading: false,
+              user,
+              organizationId,
+              role,
+              roles,
+              permissions,
+              featureFlags,
+            }));
+          } catch {
+            // No active session – just mark loading as done
+            setState((prev) => ({ ...prev, isLoading: false, user }));
+          }
         });
       });
 
