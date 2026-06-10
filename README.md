@@ -240,7 +240,12 @@ Use `state` to preserve data across the authentication redirect:
     // against your own origin and only navigate if it stays same-origin; this
     // rejects absolute URLs (https://evil.com), protocol-relative URLs
     // (//evil.com), and javascript: URIs in one step.
-    const url = new URL(state.returnTo, window.location.origin);
+    let url;
+    try {
+      url = new URL(state.returnTo, window.location.origin);
+    } catch {
+      return;
+    }
     if (url.origin === window.location.origin) {
       window.location.href = url.pathname + url.search + url.hash;
     }
