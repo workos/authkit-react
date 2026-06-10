@@ -234,14 +234,28 @@ Use `state` to preserve data across the authentication redirect:
 <AuthKitProvider
   clientId="client_01ABC123DEF456"
   onRedirectCallback={({ state }) => {
-    if (state?.returnTo) {
-      window.location.href = state.returnTo;
+    if (typeof state?.returnTo !== "string") return;
+    // `state` round-trips through the redirect as plaintext in the URL and is
+    // not validated by WorkOS, so treat it as untrusted input. Resolve it
+    // against your own origin and only navigate if it stays same-origin; this
+    // rejects absolute URLs (https://evil.com), protocol-relative URLs
+    // (//evil.com), and javascript: URIs in one step.
+    const url = new URL(state.returnTo, window.location.origin);
+    if (url.origin === window.location.origin) {
+      window.location.href = url.pathname + url.search + url.hash;
     }
   }}
 >
   <App />
 </AuthKitProvider>
 ```
+
+> [!WARNING]
+> Anything you read from `state` is **untrusted user input**. It travels as
+> plaintext in the redirect URL and WorkOS cannot validate its contents. Before
+> using a `state.returnTo`-style value to navigate, validate it as shown above —
+> never pass it directly to `window.location.href`, which would execute a
+> `javascript:` URI or follow an open-redirect to an attacker's site.
 
 ### Handling Token Refresh Failures
 
