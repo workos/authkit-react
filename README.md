@@ -247,7 +247,11 @@ Use `state` to preserve data across the authentication redirect:
       return;
     }
     if (url.origin === window.location.origin) {
-      window.location.href = url.pathname + url.search + url.hash;
+      // Navigate to the origin-validated absolute URL. Don't rebuild from
+      // url.pathname: a value like "https://your-app//evil.com" passes the
+      // origin check but has pathname "//evil.com", which is protocol-relative
+      // and would redirect off-site.
+      window.location.href = url.href;
     }
   }}
 >
