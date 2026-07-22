@@ -69,6 +69,11 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
 
   React.useEffect(() => {
     function initialize() {
+      // createClient() cannot be cancelled once started, so a superseded
+      // initialization (props changed mid-flight) may settle after this effect
+      // has been cleaned up. Ignore those stale results so they cannot clobber
+      // the current initialization's state.
+      let cancelled = false;
       const timeoutId = setTimeout(() => {
         createClient(clientId, {
           apiHostname,
@@ -80,23 +85,34 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           onRefresh: handleRefresh,
           onRefreshFailure,
           refreshBufferInterval,
-        }).then(async (client) => {
-          const user = client.getUser();
-          setClient({
-            getAccessToken: client.getAccessToken.bind(client),
-            getUser: client.getUser.bind(client),
-            signIn: client.signIn.bind(client),
-            signUp: client.signUp.bind(client),
-            signOut: client.signOut.bind(client),
-            switchToOrganization: client.switchToOrganization.bind(client),
-            getSignInUrl: client.getSignInUrl.bind(client),
-            getSignUpUrl: client.getSignUpUrl.bind(client),
+        })
+          .then(async (client) => {
+            if (cancelled) return;
+            const user = client.getUser();
+            setClient({
+              getAccessToken: client.getAccessToken.bind(client),
+              getUser: client.getUser.bind(client),
+              signIn: client.signIn.bind(client),
+              signUp: client.signUp.bind(client),
+              signOut: client.signOut.bind(client),
+              switchToOrganization: client.switchToOrganization.bind(client),
+              getSignInUrl: client.getSignInUrl.bind(client),
+              getSignUpUrl: client.getSignUpUrl.bind(client),
+            });
+            setState((prev) => ({ ...prev, isLoading: false, user }));
+          })
+          .catch((error) => {
+            if (cancelled) return;
+            // Never leave the app wedged on `isLoading: true` if client
+            // initialization rejects (e.g. a crafted callback URL). Surface the
+            // error and settle into an unauthenticated state.
+            console.error(error);
+            setState((prev) => ({ ...prev, isLoading: false, user: null }));
           });
-          setState((prev) => ({ ...prev, isLoading: false, user }));
-        });
       });
 
       return () => {
+        cancelled = true;
         clearTimeout(timeoutId);
       };
     }

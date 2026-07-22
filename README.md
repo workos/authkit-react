@@ -229,13 +229,29 @@ Use `state` to preserve data across the authentication redirect:
 </button>
 ```
 
+> **Security:** `state` round-trips through the OAuth redirect as plaintext in
+> the URL and is **not** integrity protected — treat anything read from it as
+> untrusted input. Before navigating to a `returnTo`-style value, validate it
+> against your own origin so an attacker cannot smuggle a `javascript:` URI or
+> an off-site open-redirect target.
+
 ```jsx
 // Retrieve it in onRedirectCallback
 <AuthKitProvider
   clientId="client_01ABC123DEF456"
   onRedirectCallback={({ state }) => {
-    if (state?.returnTo) {
-      window.location.href = state.returnTo;
+    if (typeof state?.returnTo !== "string") return;
+    let url;
+    try {
+      url = new URL(state.returnTo, window.location.origin);
+    } catch {
+      return; // malformed URL — ignore
+    }
+    // Only navigate to a same-origin destination. Use the parsed absolute
+    // URL, not a value rebuilt from url.pathname (a "//evil.com" pathname
+    // would redirect off-site).
+    if (url.origin === window.location.origin) {
+      window.location.href = url.href;
     }
   }}
 >
