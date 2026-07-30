@@ -30,9 +30,9 @@ createRoot(document.getElementById("root")).render(
 
 ### 3. Add a `/login` route
 
-Some authentication flows are initiated outside your app — for example, when an admin impersonates a user from the WorkOS Dashboard, or when a third-party triggers login via your app's sign-in endpoint. These flows redirect the user to a well-known login path in your app, which must then start the OAuth flow.
+Some authentication flows are initiated outside your app — for example, when an admin impersonates a user from the WorkOS Dashboard, or when a third-party triggers login via your app's Sign-in URL. These flows redirect the user to a well-known login path in your app, which must then start the OAuth flow.
 
-Register a `/login` URL (e.g. `http://localhost:5173/login`) as the **sign-in endpoint** on the same **Redirects** page, then handle it in your app:
+Register a `/login` URL (e.g. `http://localhost:5173/login`) as the **Sign-in URL** on the same **Redirects** page, then handle it in your app:
 
 ```jsx
 import { useAuth } from "@workos-inc/authkit-react";
