@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.2](https://github.com/workos/authkit-react/compare/v0.16.1...v0.16.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* bump authkit-js to ^0.20.1 and harden returnTo redirects ([#101](https://github.com/workos/authkit-react/issues/101)) ([5481fa8](https://github.com/workos/authkit-react/commit/5481fa8d21403c95abb462c74f522a5827ab02b9))
+
 ## [0.16.1](https://github.com/workos/authkit-react/compare/v0.16.0...v0.16.1) (2026-03-26)
 
 
