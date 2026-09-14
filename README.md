@@ -12,7 +12,7 @@ npm install @workos-inc/authkit-react
 
 ### 1. Configure the WorkOS Dashboard
 
-- Add a **Redirect URI** (e.g. `http://localhost:5173`) on the **Redirects** page. This is where WorkOS sends users after they authenticate.
+- Add a **Redirect URI** (e.g. `http://localhost:5173`) on your application's **Redirects** tab. This is where WorkOS sends users after they authenticate.
 - Add your app's origin (e.g. `http://localhost:5173`) to the allowed origins list on the **Authentication** page of the [WorkOS Dashboard](https://dashboard.workos.com).
 
 ### 2. Wrap your app in `AuthKitProvider`
@@ -30,9 +30,9 @@ createRoot(document.getElementById("root")).render(
 
 ### 3. Add a `/login` route
 
-Some authentication flows are initiated outside your app — for example, when an admin impersonates a user from the WorkOS Dashboard, or when a third-party triggers login via your app's Sign-in URL. These flows redirect the user to a well-known login path in your app, which must then start the OAuth flow.
+Some authentication flows are initiated outside your app — for example, when an admin impersonates a user from the WorkOS Dashboard, or when a third-party triggers login via your app's Initiate login URI. These flows redirect the user to a well-known login path in your app, which must then start the OAuth flow.
 
-Register a `/login` URL (e.g. `http://localhost:5173/login`) as the **Sign-in URL** on the same **Redirects** page, then handle it in your app:
+In the [WorkOS dashboard](https://dashboard.workos.com), open **Applications**, select your application, go to the **Redirects** tab. Register a `/login` URL (e.g. `http://localhost:5173/login`) as the **Initiate login URI** for your application, then handle it in your app:
 
 ```jsx
 import { useAuth } from "@workos-inc/authkit-react";
