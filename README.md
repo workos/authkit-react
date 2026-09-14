@@ -32,7 +32,7 @@ createRoot(document.getElementById("root")).render(
 
 Some authentication flows are initiated outside your app — for example, when an admin impersonates a user from the WorkOS Dashboard, or when a third-party triggers login via your app's Initiate login URI. These flows redirect the user to a well-known login path in your app, which must then start the OAuth flow.
 
-Register a `/login` URL (e.g. `http://localhost:5173/login`) as the **Initiate login URI** on the same **Redirects** tab, then handle it in your app:
+In the [WorkOS dashboard](https://dashboard.workos.com), open **Applications**, select your application, go to the **Redirects** tab. Register a `/login` URL (e.g. `http://localhost:5173/login`) as the **Initiate login URI** for your application, then handle it in your app:
 
 ```jsx
 import { useAuth } from "@workos-inc/authkit-react";
