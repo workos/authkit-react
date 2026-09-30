@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.3](https://github.com/workos/authkit-react/compare/v0.16.2...v0.16.3) (2026-09-30)
+
+
+### Bug Fixes
+
+* **deps:** bump @workos-inc/authkit-js to ^0.20.4 ([#107](https://github.com/workos/authkit-react/issues/107)) ([a1b0ebf](https://github.com/workos/authkit-react/commit/a1b0ebf4cace7dba550471b633585ab2baf3c367))
+
 ## [0.16.2](https://github.com/workos/authkit-react/compare/v0.16.1...v0.16.2) (2026-07-30)
 
 
