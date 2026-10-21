@@ -8,6 +8,7 @@
   "files": [
     "dist",
     "src",
+    "!src/__tests__",
     "LICENSE",
     "README.md"
   ],
@@ -15,7 +16,7 @@
     "build": "tsup",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -27,11 +28,19 @@
   },
   "homepage": "https://github.com/workos/authkit-react#readme",
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "18.3.3",
+    "@types/react-dom": "^18.3.7",
+    "jsdom": "^29.1.1",
     "prettier": "^3.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "ts-node": "^10.9.2",
     "tsup": "^8.3.5",
-    "typescript": "5.5.3"
+    "typescript": "5.5.3",
+    "vitest": "^4.1.12"
   },
   "peerDependencies": {
     "react": ">=17"
