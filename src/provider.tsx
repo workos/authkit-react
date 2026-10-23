@@ -69,11 +69,11 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
 
   React.useEffect(() => {
     function initialize() {
-      // createClient() cannot be cancelled once started, so a superseded
+      // createClient() cannot be canceled once started, so a superseded
       // initialization (props changed mid-flight) may settle after this effect
       // has been cleaned up. Ignore those stale results so they cannot clobber
       // the current initialization's state.
-      let cancelled = false;
+      let canceled = false;
       const timeoutId = setTimeout(() => {
         createClient(clientId, {
           apiHostname,
@@ -87,7 +87,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
           refreshBufferInterval,
         })
           .then(async (client) => {
-            if (cancelled) return;
+            if (canceled) return;
             const user = client.getUser();
             setClient({
               getAccessToken: client.getAccessToken.bind(client),
@@ -102,7 +102,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
             setState((prev) => ({ ...prev, isLoading: false, user }));
           })
           .catch((error) => {
-            if (cancelled) return;
+            if (canceled) return;
             // Never leave the app wedged on `isLoading: true` if client
             // initialization rejects (e.g. a crafted callback URL). Surface the
             // error and settle into an unauthenticated state.
@@ -112,7 +112,7 @@ export function AuthKitProvider(props: AuthKitProviderProps) {
       });
 
       return () => {
-        cancelled = true;
+        canceled = true;
         clearTimeout(timeoutId);
       };
     }
